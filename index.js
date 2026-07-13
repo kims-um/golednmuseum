@@ -19,16 +19,31 @@ const supabase = createClient(
   process.env.SUPABASE_KEY
 );
 
+const BROWSER_ARGS = [
+  '--no-sandbox',
+  '--disable-setuid-sandbox',
+  '--disable-blink-features=AutomationControlled',
+  '--disable-dev-shm-usage',
+  '--disable-accelerated-2d-canvas',
+  '--no-first-run',
+  '--no-zygote',
+  '--single-process',
+  '--disable-gpu'
+];
+
+const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+
+async function launchBrowser() {
+  return puppeteer.launch({ args: BROWSER_ARGS, headless: true });
+}
+
 async function scrapePSA(cert, retries = 3) {
   for (let i = 0; i < retries; i++) {
     let browser;
     try {
-      browser = await puppeteer.launch({
-        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-blink-features=AutomationControlled'],
-        headless: true
-      });
+      browser = await launchBrowser();
       const page = await browser.newPage();
-      await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+      await page.setUserAgent(UA);
       await page.setExtraHTTPHeaders({ 'Accept-Language': 'en-US,en;q=0.9' });
       await page.goto(`https://www.psacard.com/cert/${cert}/psa`, { waitUntil: 'domcontentloaded', timeout: 60000 });
       await new Promise(r => setTimeout(r, 5000));
@@ -55,11 +70,9 @@ async function scrapePSA(cert, retries = 3) {
       await browser.close();
       if (data.grade && data.subject) {
         let language = 'EN';
-        if (data.brand) {
-          const b = data.brand.toUpperCase();
-          if (b.includes('JAPANESE')) language = 'JP';
-          else if (b.includes('KOREAN')) language = 'KR';
-        }
+        const b = (data.brand || '').toUpperCase();
+        if (b.includes('JAPANESE')) language = 'JP';
+        else if (b.includes('KOREAN')) language = 'KR';
         return { ...data, language };
       }
     } catch (err) {
@@ -74,38 +87,38 @@ async function scrapeCGC(cert, retries = 3) {
   for (let i = 0; i < retries; i++) {
     let browser;
     try {
-      browser = await puppeteer.launch({
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        headless: true
-      });
+      browser = await launchBrowser();
       const page = await browser.newPage();
-      await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
-      await page.goto(`http://www.cgccards.com/certlookup/${cert}/`, { waitUntil: 'networkidle2', timeout: 60000 });
+      await page.setUserAgent(UA);
+      await page.setExtraHTTPHeaders({ 'Accept-Language': 'en-US,en;q=0.9' });
+      await page.goto(`https://www.cgccards.com/certlookup/${cert}/`, { waitUntil: 'domcontentloaded', timeout: 60000 });
       await new Promise(r => setTimeout(r, 7000));
 
       const data = await page.evaluate(() => {
-        const allText = document.body.innerText;
-        const lines = allText.split('\n').map(l => l.trim()).filter(Boolean);
-        let cardName = '', grade = '', language = '', variety = '', cardSet = '', brand = '';
+        const text = document.body.innerText || '';
+        const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+        let cardName = '', grade = '', language = '', variant1 = '', variant2 = '', cardSet = '';
         for (let i = 0; i < lines.length; i++) {
           if (lines[i] === 'Card Name') cardName = lines[i+1] || '';
           if (lines[i] === 'Grade') grade = lines[i+1] || '';
           if (lines[i] === 'Language') language = lines[i+1] || '';
-          if (lines[i] === 'Variant 1') variety = lines[i+1] || '';
+          if (lines[i] === 'Variant 1') variant1 = lines[i+1] || '';
+          if (lines[i] === 'Variant 2') variant2 = lines[i+1] || '';
           if (lines[i] === 'Card Set') cardSet = lines[i+1] || '';
-          if (lines[i] === 'Game') brand = lines[i+1] || '';
         }
         let langCode = '';
-        if (language.toLowerCase().includes('japanese')) langCode = 'JP';
-        else if (language.toLowerCase().includes('korean')) langCode = 'KR';
-        else if (language.toLowerCase().includes('english')) langCode = 'EN';
-        return { cardName, grade, variety, cardSet, brand, language: langCode, rawText: allText.slice(0, 500) };
+        const lang = language.toLowerCase();
+        if (lang.includes('japanese')) langCode = 'JP';
+        else if (lang.includes('korean')) langCode = 'KR';
+        else if (lang.includes('english')) langCode = 'EN';
+
+        const variety = [variant1, variant2].filter(Boolean).join(' · ');
+        return { cardName, grade, language: langCode, variety, cardSet, isCloudflare: text.includes('security verification') };
       });
 
       await browser.close();
+      if (data.isCloudflare) { await new Promise(r => setTimeout(r, 3000)); continue; }
       if (data.cardName) return data;
-      // 파싱 실패해도 rawText 반환해서 디버깅
-      if (data.rawText) return { debug: data.rawText };
     } catch (err) {
       if (browser) await browser.close();
     }
@@ -135,8 +148,7 @@ app.get('/cgc', async (req, res) => {
   }
   const data = await scrapeCGC(cert);
   if (!data) return res.status(404).json({ error: 'CGC 카드 정보를 찾을 수 없습니다' });
-  if (data.debug) return res.status(200).json({ debug: data.debug, error: '파싱 실패' });
-  res.json({ cert, cardName: data.cardName, grade: data.grade, variety: data.variety, brand: data.brand, language: data.language, cardSet: data.cardSet });
+  res.json({ cert, cardName: data.cardName, grade: data.grade, variety: data.variety, language: data.language, cardSet: data.cardSet });
 });
 
 app.get('/products', async (req, res) => {
@@ -176,7 +188,10 @@ app.post('/products', async (req, res) => {
 
 app.post('/graded-cards', async (req, res) => {
   const { cert_number, card_name, grade, variety, image_url, grader, language, brand, card_set, avg_cost } = req.body;
-  const { data, error } = await supabase.from('graded_cards').upsert({ cert_number, card_name, grade, variety, image_url, grader: grader||'PSA', language, brand, card_set, avg_cost: avg_cost||0 }).select();
+  const { data, error } = await supabase.from('graded_cards').upsert({
+    cert_number, card_name, grade, variety, image_url,
+    grader: grader||'PSA', language, brand, card_set, avg_cost: avg_cost||0
+  }).select();
   if (error) return res.status(500).json({ error: error.message });
   await supabase.from('transactions').insert({ type: 'in', product_type: 'graded_card', name: card_name||cert_number, qty: 1, price: avg_cost, total: avg_cost, cost: avg_cost, pay_method: '-' });
   res.json(data);
