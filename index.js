@@ -22,6 +22,8 @@ app.get('/psa', async (req, res) => {
       waitUntil: 'domcontentloaded', 
       timeout: 60000 
     });
+
+    await new Promise(r => setTimeout(r, 5000));
     
     const data = await page.evaluate(() => {
       const h1 = document.querySelector('h1');
@@ -45,7 +47,7 @@ app.get('/psa', async (req, res) => {
     await browser.close();
 
     if (!data.grade && !data.subject) {
-      return res.status(404).json({ error: '카드 정보를 찾을 수 없습니다' });
+      return res.status(404).json({ error: '카드 정보를 찾을 수 없습니다', debug: data });
     }
 
     res.json({
