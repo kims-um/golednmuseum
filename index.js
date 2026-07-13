@@ -18,24 +18,47 @@ app.get('/psa', async (req, res) => {
       headless: true
     });
     const page = await browser.newPage();
-    await page.goto(`https://www.psacard.com/cert/${cert}/psa`, { waitUntil: 'networkidle2', timeout: 30000 });
-    const content = await page.content();
+    await page.goto(`https://www.psacard.com/cert/${cert}/psa`, { 
+      waitUntil: 'networkidle2', 
+      timeout: 30000 
+    });
+    
+    const data = await page.evaluate(() => {
+      const h1 = document.querySelector('h1');
+      const cardName = h1 ? h1.textContent.trim() : '';
+      
+      const items = document.querySelectorAll('dl div');
+      let grade = '', year = '', brand = '', subject = '';
+      
+      items.forEach(item => {
+        const dt = item.querySelector('dt');
+        const dd = item.querySelector('dd');
+        if (!dt || !dd) return;
+        const label = dt.textContent.trim();
+        const value = dd.textContent.trim();
+        if (label === 'Item Grade') grade = value;
+        if (label === 'Year') year = value;
+        if (label === 'Brand/Title') brand = value;
+        if (label === 'Subject') subject = value;
+      });
+      
+      return { cardName, grade, year, brand, subject };
+    });
+
     await browser.close();
 
-    const nameMatch = content.match(/"Subject"\s*:\s*"([^"]+)"/);
-    const gradeMatch = content.match(/"CardGrade"\s*:\s*"([^"]+)"/);
-    const yearMatch = content.match(/"Year"\s*:\s*"([^"]+)"/);
-    const brandMatch = content.match(/"Brand"\s*:\s*"([^"]+)"/);
-
-    if (!nameMatch) return res.status(404).json({ error: '카드 정보를 찾을 수 없습니다' });
+    if (!data.grade && !data.subject) {
+      return res.status(404).json({ error: '카드 정보를 찾을 수 없습니다' });
+    }
 
     res.json({
       cert,
-      cardName: nameMatch?.[1] || '',
-      grade: gradeMatch?.[1] || '',
-      year: yearMatch?.[1] || '',
-      brand: brandMatch?.[1] || ''
+      cardName: data.subject || data.cardName,
+      grade: data.grade,
+      year: data.year,
+      brand: data.brand,
     });
+
   } catch (err) {
     if (browser) await browser.close();
     res.status(500).json({ error: err.message });
