@@ -19,6 +19,7 @@ const supabase = createClient(
   process.env.SUPABASE_KEY
 );
 
+// PSA 크롤링
 async function scrapePSA(cert, retries = 3) {
   for (let i = 0; i < retries; i++) {
     let browser;
@@ -29,19 +30,13 @@ async function scrapePSA(cert, retries = 3) {
       });
       const page = await browser.newPage();
       await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
-      await page.setExtraHTTPHeaders({
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-      });
-      await page.goto(`https://www.psacard.com/cert/${cert}/psa`, {
-        waitUntil: 'domcontentloaded',
-        timeout: 60000
-      });
+      await page.setExtraHTTPHeaders({ 'Accept-Language': 'en-US,en;q=0.9' });
+      await page.goto(`https://www.psacard.com/cert/${cert}/psa`, { waitUntil: 'domcontentloaded', timeout: 60000 });
       await new Promise(r => setTimeout(r, 5000));
 
       const data = await page.evaluate(() => {
         const items = document.querySelectorAll('dl div');
-        let grade = '', subject = '', variety = '';
+        let grade = '', subject = '', variety = '', brand = '';
         items.forEach(item => {
           const dt = item.querySelector('dt');
           const dd = item.querySelector('dd');
@@ -51,15 +46,24 @@ async function scrapePSA(cert, retries = 3) {
           if (label === 'Item Grade') grade = value;
           if (label === 'Subject') subject = value;
           if (label === 'Variety/Pedigree') variety = value;
+          if (label === 'Brand/Title') brand = value;
         });
         const images = Array.from(document.querySelectorAll('main img'))
-          .map(img => img.src)
-          .filter(src => src.includes('cloudfront.net'));
-        return { grade, subject, variety, images };
+          .map(img => img.src).filter(src => src.includes('cloudfront.net'));
+        return { grade, subject, variety, brand, images };
       });
 
       await browser.close();
-      if (data.grade && data.subject) return data;
+      if (data.grade && data.subject) {
+        // 언어 추출
+        let language = 'EN';
+        if (data.brand) {
+          const b = data.brand.toUpperCase();
+          if (b.includes('JAPANESE')) language = 'JP';
+          else if (b.includes('KOREAN')) language = 'KR';
+        }
+        return { ...data, language };
+      }
     } catch (err) {
       if (browser) await browser.close();
     }
@@ -68,19 +72,88 @@ async function scrapePSA(cert, retries = 3) {
   return null;
 }
 
+// CGC 크롤링
+async function scrapeCGC(cert, retries = 3) {
+  for (let i = 0; i < retries; i++) {
+    let browser;
+    try {
+      browser = await puppeteer.launch({
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        headless: true
+      });
+      const page = await browser.newPage();
+      await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+      await page.goto(`http://www.cgccards.com/certlookup/${cert}/`, { waitUntil: 'domcontentloaded', timeout: 60000 });
+      await new Promise(r => setTimeout(r, 4000));
+
+      const data = await page.evaluate(() => {
+        const getText = (selector) => {
+          const el = document.querySelector(selector);
+          return el ? el.textContent.trim() : '';
+        };
+        const allText = document.body.innerText;
+        const lines = allText.split('\n').map(l => l.trim()).filter(Boolean);
+        
+        let cardName = '', grade = '', language = '', variety = '', cardSet = '';
+        
+        // 라벨 기반 파싱
+        for (let i = 0; i < lines.length; i++) {
+          if (lines[i] === 'Card Name') cardName = lines[i+1] || '';
+          if (lines[i] === 'Grade') grade = lines[i+1] || '';
+          if (lines[i] === 'Language') language = lines[i+1] || '';
+          if (lines[i] === 'Variant 1') variety = lines[i+1] || '';
+          if (lines[i] === 'Card Set') cardSet = lines[i+1] || '';
+        }
+
+        // 언어 → 코드 변환
+        let langCode = '';
+        if (language.toLowerCase().includes('japanese')) langCode = 'JP';
+        else if (language.toLowerCase().includes('korean')) langCode = 'KR';
+        else if (language.toLowerCase().includes('english')) langCode = 'EN';
+
+        return { cardName, grade, variety, cardSet, language: langCode };
+      });
+
+      await browser.close();
+      if (data.cardName) return data;
+    } catch (err) {
+      if (browser) await browser.close();
+    }
+    await new Promise(r => setTimeout(r, 2000));
+  }
+  return null;
+}
+
+// PSA 엔드포인트
 app.get('/psa', async (req, res) => {
   const { cert } = req.query;
   if (!cert) return res.status(400).json({ error: '써티 번호 없음' });
 
   const { data: cached } = await supabase.from('graded_cards').select().eq('cert_number', cert).single();
   if (cached && cached.card_name) {
-    return res.json({ cert, cardName: cached.card_name, grade: cached.grade, variety: cached.variety, images: cached.image_url ? [cached.image_url] : [], cached: true });
+    return res.json({ cert, cardName: cached.card_name, grade: cached.grade, variety: cached.variety, language: cached.language, cached: true });
   }
 
   const data = await scrapePSA(cert);
   if (!data) return res.status(404).json({ error: '카드 정보를 찾을 수 없습니다' });
 
-  res.json({ cert, cardName: data.subject, grade: data.grade, variety: data.variety, images: data.images || [] });
+  res.json({ cert, cardName: data.subject, grade: data.grade, variety: data.variety, language: data.language, images: data.images || [] });
+});
+
+// CGC 엔드포인트
+app.get('/cgc', async (req, res) => {
+  const { cert } = req.query;
+  if (!cert) return res.status(400).json({ error: '써티 번호 없음' });
+
+  const { data: cached } = await supabase.from('graded_cards').select().eq('cert_number', cert).single();
+  if (cached && cached.card_name) {
+    return res.json({ cert, cardName: cached.card_name, grade: cached.grade, variety: cached.variety, language: cached.language, cached: true });
+  }
+
+  const data = await scrapeCGC(cert);
+  if (!data) return res.status(404).json({ error: 'CGC 카드 정보를 찾을 수 없습니다' });
+
+  res.json({ cert, cardName: data.cardName, grade: data.grade, variety: data.variety, language: data.language, cardSet: data.cardSet });
 });
 
 app.get('/products', async (req, res) => {
@@ -106,23 +179,23 @@ app.post('/products', async (req, res) => {
   const { data: existing } = await supabase.from('products').select().eq('barcode', barcode).single();
   if (existing) {
     const newQty = existing.qty + (qty || 1);
-    const newCost = (existing.avg_cost * existing.qty + avg_cost * qty) / newQty;
+    const newCost = (existing.avg_cost * existing.qty + (avg_cost||0) * (qty||1)) / newQty;
     const { data, error } = await supabase.from('products').update({ qty: newQty, avg_cost: newCost }).eq('barcode', barcode).select();
     if (error) return res.status(500).json({ error: error.message });
-    await supabase.from('transactions').insert({ type: 'in', product_type: 'product', product_id: existing.id, name, qty, price: avg_cost, total: avg_cost * qty, cost: avg_cost, pay_method: '-' });
+    await supabase.from('transactions').insert({ type: 'in', product_type: 'product', product_id: existing.id, name, qty, price: avg_cost, total: (avg_cost||0) * (qty||1), cost: avg_cost, pay_method: '-' });
     return res.json(data);
   }
   const { data, error } = await supabase.from('products').insert({ barcode, name, type, country, packs, sell_price, avg_cost: avg_cost || 0, qty: qty || 1 }).select();
   if (error) return res.status(500).json({ error: error.message });
-  await supabase.from('transactions').insert({ type: 'in', product_type: 'product', product_id: data[0].id, name, qty, price: avg_cost, total: avg_cost * qty, cost: avg_cost, pay_method: '-' });
+  await supabase.from('transactions').insert({ type: 'in', product_type: 'product', product_id: data[0].id, name, qty, price: avg_cost, total: (avg_cost||0) * (qty||1), cost: avg_cost, pay_method: '-' });
   res.json(data);
 });
 
 app.post('/graded-cards', async (req, res) => {
-  const { cert_number, card_name, grade, year, brand, variety, image_url, grader, avg_cost } = req.body;
-  const { data, error } = await supabase.from('graded_cards').upsert({ cert_number, card_name, grade, year, brand, variety, image_url, grader: grader || 'PSA', avg_cost: avg_cost || 0 }).select();
+  const { cert_number, card_name, grade, variety, image_url, grader, language, avg_cost } = req.body;
+  const { data, error } = await supabase.from('graded_cards').upsert({ cert_number, card_name, grade, variety, image_url, grader: grader || 'PSA', language, avg_cost: avg_cost || 0 }).select();
   if (error) return res.status(500).json({ error: error.message });
-  await supabase.from('transactions').insert({ type: 'in', product_type: 'graded_card', name: card_name, qty: 1, price: avg_cost, total: avg_cost, cost: avg_cost, pay_method: '-' });
+  await supabase.from('transactions').insert({ type: 'in', product_type: 'graded_card', name: card_name || cert_number, qty: 1, price: avg_cost, total: avg_cost, cost: avg_cost, pay_method: '-' });
   res.json(data);
 });
 
@@ -131,7 +204,7 @@ app.post('/sell', async (req, res) => {
   for (const item of items) {
     if (item.product_type === 'product') {
       const { data: p } = await supabase.from('products').select().eq('id', item.product_id).single();
-      await supabase.from('products').update({ qty: p.qty - item.qty }).eq('id', item.product_id);
+      if (p) await supabase.from('products').update({ qty: p.qty - item.qty }).eq('id', item.product_id);
     } else {
       await supabase.from('graded_cards').update({ status: 'sold' }).eq('id', item.product_id);
     }
