@@ -18,7 +18,7 @@ app.get('/psa', async (req, res) => {
       headless: true
     });
     const page = await browser.newPage();
-    await page.goto(`https://www.psacard.com/cert/${cert}`, { waitUntil: 'networkidle2', timeout: 30000 });
+    await page.goto(`https://www.psacard.com/cert/${cert}/psa`, { waitUntil: 'networkidle2', timeout: 30000 });
     const content = await page.content();
     await browser.close();
 
