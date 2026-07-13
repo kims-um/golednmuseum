@@ -6,142 +6,127 @@
 <title>카드로그</title>
 <style>
 :root {
-  --bg: #f7f7f2;
+  --bg: #f4f4ee;
   --surface: #ffffff;
-  --surface2: #f0f0e8;
-  --border: #e0e0d0;
-  --green-dark: #4a7c3f;
-  --green-mid: #8fbc6e;
+  --surface2: #eeede6;
+  --border: #ddddd0;
+  --green: #4a7c3f;
+  --green2: #8fbc6e;
   --yellow: #fde98a;
   --orange: #f0a040;
+  --red: #e05050;
   --text: #2a2a1e;
   --text2: #7a7a60;
   --radius: 10px;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg); color: var(--text); font-family: 'Apple SD Gothic Neo', 'Pretendard', sans-serif; min-height: 100vh; }
+body { background: var(--bg); color: var(--text); font-family: 'Apple SD Gothic Neo', sans-serif; min-height: 100vh; font-size: 14px; }
 
-header {
-  background: var(--green-dark);
-  padding: 14px 24px;
-  display: flex; align-items: center; justify-content: space-between;
-}
-header h1 { font-size: 18px; font-weight: 800; color: var(--yellow); letter-spacing: -0.5px; }
+header { background: var(--green); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; }
+header h1 { font-size: 17px; font-weight: 800; color: var(--yellow); }
 header .sub { font-size: 11px; color: rgba(253,233,138,0.6); }
 
-nav {
-  display: flex; gap: 4px; padding: 10px 20px;
-  background: var(--green-dark); border-bottom: 3px solid var(--orange);
-  overflow-x: auto;
-}
-nav button {
-  background: rgba(255,255,255,0.1); border: none; color: rgba(255,255,255,0.7);
-  padding: 7px 16px; border-radius: 6px; cursor: pointer; font-size: 13px;
-  transition: all 0.15s; white-space: nowrap; font-family: inherit;
-}
+nav { display: flex; gap: 3px; padding: 8px 16px; background: var(--green); border-bottom: 3px solid var(--orange); overflow-x: auto; }
+nav button { background: rgba(255,255,255,0.1); border: none; color: rgba(255,255,255,0.7); padding: 7px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; white-space: nowrap; font-family: inherit; transition: all 0.15s; }
 nav button.active { background: var(--orange); color: #fff; font-weight: 700; }
 nav button:hover:not(.active) { background: rgba(255,255,255,0.2); color: #fff; }
 
-main { padding: 20px; max-width: 1100px; margin: 0 auto; }
+main { padding: 16px; max-width: 1200px; margin: 0 auto; }
 .tab { display: none; }
 .tab.active { display: block; }
 
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; margin-bottom: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
 
-.scan-box {
-  border: 2px dashed var(--green-mid); border-radius: var(--radius);
-  padding: 20px; text-align: center; margin-bottom: 14px;
-  background: rgba(143,188,110,0.08);
-}
-.scan-box p { font-size: 12px; color: var(--text2); margin-bottom: 8px; }
-.scan-input {
-  font-size: 20px; font-weight: 700; color: var(--green-dark);
-  background: transparent; border: none; border-bottom: 2px solid var(--green-dark);
-  text-align: center; width: 100%; max-width: 400px; outline: none; padding: 6px;
-}
+.scan-box { border: 2px dashed var(--green2); border-radius: var(--radius); padding: 16px; text-align: center; margin-bottom: 12px; background: rgba(143,188,110,0.06); }
+.scan-box p { font-size: 12px; color: var(--text2); margin-bottom: 6px; }
+.scan-input { font-size: 18px; font-weight: 700; color: var(--green); background: transparent; border: none; border-bottom: 2px solid var(--green); text-align: center; width: 100%; max-width: 400px; outline: none; padding: 5px; }
 
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
-.form-grid.g3 { grid-template-columns: 1fr 1fr 1fr; }
-.full { grid-column: 1 / -1; }
-.fg { display: flex; flex-direction: column; gap: 5px; }
-label { font-size: 11px; color: var(--text2); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-input, select {
-  background: var(--surface2); border: 1px solid var(--border);
-  color: var(--text); border-radius: 6px; padding: 9px 11px; font-size: 14px;
-  outline: none; transition: border-color 0.15s; font-family: inherit;
-}
-input:focus, select:focus { border-color: var(--green-dark); }
-input::placeholder { color: var(--text2); font-size: 13px; }
+.form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-top: 10px; }
+.fg { display: flex; flex-direction: column; gap: 4px; }
+.fg.full { grid-column: 1 / -1; }
+label { font-size: 11px; color: var(--text2); font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; }
+input, select { background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: 6px; padding: 8px 10px; font-size: 13px; outline: none; transition: border-color 0.15s; font-family: inherit; }
+input:focus, select:focus { border-color: var(--green); }
+input::placeholder { color: var(--text2); }
 
-.btn { padding: 9px 18px; border-radius: 6px; border: none; cursor: pointer; font-size: 13px; font-weight: 700; transition: all 0.15s; font-family: inherit; }
-.btn-primary { background: var(--green-dark); color: #fff; }
+.btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-size: 13px; font-weight: 700; font-family: inherit; transition: all 0.15s; }
+.btn-primary { background: var(--green); color: #fff; }
 .btn-primary:hover { background: #3a6230; }
-.btn-success { background: var(--green-mid); color: #fff; }
+.btn-success { background: var(--green2); color: #fff; }
 .btn-warn { background: var(--orange); color: #fff; }
+.btn-danger { background: var(--red); color: #fff; }
 .btn-ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
-.btn-ghost:hover { border-color: var(--green-dark); }
-.btn-sm { padding: 5px 11px; font-size: 12px; }
+.btn-ghost:hover { border-color: var(--green); }
+.btn-sm { padding: 4px 10px; font-size: 12px; }
+.btn-xs { padding: 3px 8px; font-size: 11px; }
 
-.mt { margin-top: 12px; }
 .flex { display: flex; gap: 8px; align-items: center; }
-.flex-between { display: flex; justify-content: space-between; align-items: center; }
-.divider { height: 1px; background: var(--border); margin: 14px 0; }
-.section-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--green-dark); }
+.flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+.mt { margin-top: 10px; }
+.divider { height: 1px; background: var(--border); margin: 12px 0; }
+.sec-title { font-size: 13px; font-weight: 700; color: var(--green); margin-bottom: 10px; }
 
-/* 알림 박스 */
-.alert { border-radius: 8px; padding: 12px 14px; margin-top: 10px; font-size: 13px; }
-.alert-loading { background: rgba(143,188,110,0.12); border: 1px solid var(--green-mid); color: var(--green-dark); }
-.alert-success { background: rgba(74,124,63,0.08); border: 1px solid var(--green-dark); }
+.alert { border-radius: 8px; padding: 10px 13px; margin-top: 8px; font-size: 13px; }
+.alert-ok { background: rgba(74,124,63,0.08); border: 1px solid var(--green); }
+.alert-loading { background: rgba(143,188,110,0.1); border: 1px solid var(--green2); color: var(--green); }
 .alert-warn { background: rgba(240,160,64,0.1); border: 1px solid var(--orange); color: #a05010; }
-.alert-err { background: rgba(220,60,60,0.08); border: 1px solid #dc3c3c; color: #dc3c3c; }
+.alert-err { background: rgba(220,60,60,0.08); border: 1px solid var(--red); color: var(--red); }
 
-/* 배지 */
-.badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; }
-.badge-in { background: rgba(74,124,63,0.12); color: var(--green-dark); }
-.badge-out { background: rgba(220,60,60,0.1); color: #dc3c3c; }
+.badge { display: inline-block; padding: 2px 7px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+.badge-in { background: rgba(74,124,63,0.12); color: var(--green); }
+.badge-out { background: rgba(220,60,60,0.1); color: var(--red); }
 .badge-oripa { background: rgba(240,160,64,0.15); color: #a05010; }
-.badge-jp { background: rgba(253,233,138,0.5); color: #7a6010; border: 1px solid #e8c84a; }
-.badge-kr { background: rgba(143,188,110,0.2); color: var(--green-dark); border: 1px solid var(--green-mid); }
-.badge-en { background: rgba(74,124,63,0.12); color: var(--green-dark); }
+.badge-jp { background: rgba(253,233,138,0.6); color: #7a6010; border: 1px solid #e0b830; }
+.badge-kr { background: rgba(74,124,63,0.12); color: var(--green); border: 1px solid var(--green2); }
+.badge-en { background: rgba(100,130,220,0.12); color: #3050a0; border: 1px solid #8090d0; }
 .badge-psa { background: #1a1a2e; color: #e8b84a; }
 .badge-cgc { background: #2e1a1a; color: #e87a4a; }
 .badge-bgs { background: #1a2e2e; color: #4ab8e8; }
 
-/* 테이블 */
 .table-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; font-size: 13px; }
-th { background: var(--surface2); color: var(--text2); padding: 9px 12px; text-align: left; font-size: 11px; font-weight: 700; border-bottom: 2px solid var(--border); text-transform: uppercase; letter-spacing: 0.5px; }
-td { padding: 9px 12px; border-bottom: 1px solid var(--border); }
+th { background: var(--surface2); color: var(--text2); padding: 8px 10px; text-align: left; font-size: 11px; font-weight: 700; border-bottom: 2px solid var(--border); text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap; }
+td { padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
 tr:last-child td { border-bottom: none; }
-tr:hover td { background: rgba(143,188,110,0.05); }
+tr:hover td { background: rgba(143,188,110,0.05); cursor: pointer; }
 
-.qty-ok { color: var(--green-dark); font-weight: 700; }
+.qty-ok { color: var(--green); font-weight: 700; }
 .qty-low { color: var(--orange); font-weight: 700; }
-.qty-zero { color: #dc3c3c; font-weight: 700; }
+.qty-zero { color: var(--red); font-weight: 700; }
 
-/* 통계 */
-.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
-.stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
-.stat-label { font-size: 11px; color: var(--text2); margin-bottom: 5px; font-weight: 700; text-transform: uppercase; }
-.stat-val { font-size: 20px; font-weight: 800; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
+.stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; }
+.stat-label { font-size: 11px; color: var(--text2); margin-bottom: 4px; font-weight: 700; text-transform: uppercase; }
+.stat-val { font-size: 18px; font-weight: 800; }
 
-/* 장바구니 */
+.low-stock-alert { background: rgba(240,160,64,0.1); border: 1px solid var(--orange); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; }
+.low-stock-alert .title { font-size: 12px; font-weight: 700; color: #a05010; margin-bottom: 6px; }
+.low-stock-items { display: flex; flex-wrap: wrap; gap: 6px; }
+.low-stock-item { background: var(--orange); color: #fff; border-radius: 20px; padding: 3px 10px; font-size: 12px; font-weight: 600; }
+
+.tabs { display: flex; gap: 2px; margin-bottom: 12px; }
+.tab-btn { padding: 7px 16px; border: 1px solid var(--border); border-radius: 6px 6px 0 0; background: var(--surface2); color: var(--text2); cursor: pointer; font-size: 13px; font-weight: 600; font-family: inherit; border-bottom: none; }
+.tab-btn.active { background: var(--surface); color: var(--green); border-color: var(--border); border-bottom: 2px solid var(--surface); margin-bottom: -1px; }
+
 .cart-item { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.cart-item:last-child { border-bottom: none; }
 
-/* 토스트 */
-#toast { position: fixed; bottom: 20px; right: 20px; background: var(--green-dark); color: #fff; border-radius: 8px; padding: 11px 18px; font-size: 13px; font-weight: 600; box-shadow: 0 8px 24px rgba(0,0,0,0.2); transform: translateY(60px); opacity: 0; transition: all 0.2s; z-index: 999; }
+.modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
+.modal-bg.open { display: flex; }
+.modal { background: var(--surface); border-radius: 12px; padding: 20px; width: 480px; max-width: 94vw; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+.modal-title { font-size: 15px; font-weight: 700; margin-bottom: 14px; color: var(--green); }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
+
+#toast { position: fixed; bottom: 20px; right: 20px; background: var(--green); color: #fff; border-radius: 8px; padding: 10px 16px; font-size: 13px; font-weight: 600; box-shadow: 0 6px 20px rgba(0,0,0,0.2); transform: translateY(60px); opacity: 0; transition: all 0.2s; z-index: 999; }
 #toast.show { transform: translateY(0); opacity: 1; }
-#toast.err { background: #dc3c3c; }
+#toast.err { background: var(--red); }
+#toast.warn { background: var(--orange); }
 
-.empty { text-align: center; padding: 40px; color: var(--text2); font-size: 14px; }
+.empty { text-align: center; padding: 32px; color: var(--text2); font-size: 13px; }
+.sb { padding: 6px 10px; font-size: 13px; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); outline: none; }
+.sb:focus { border-color: var(--green); }
 
-.search-bar { padding: 7px 11px; font-size: 13px; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); outline: none; }
-.search-bar:focus { border-color: var(--green-dark); }
-
-@media(max-width:600px){
-  .stats { grid-template-columns: repeat(2,1fr); }
-  .form-grid { grid-template-columns: 1fr; }
-}
+@media(max-width:600px) { .stats { grid-template-columns: repeat(2,1fr); } }
 </style>
 </head>
 <body>
@@ -164,19 +149,21 @@ tr:hover td { background: rgba(143,188,110,0.05); }
 <!-- 입고 -->
 <div id="tab-in" class="tab active">
   <div class="scan-box">
-    <p>QR / 바코드 스캔 또는 직접 입력 후 Enter</p>
-    <input class="scan-input" id="in-bc" placeholder="스캔 또는 URL/번호 입력..." autofocus
-      onkeydown="if(event.key==='Enter')doInScan()">
+    <p>QR / 바코드 스캔 또는 URL 입력 후 Enter</p>
+    <input class="scan-input" id="in-bc" placeholder="스캔..." autofocus onkeydown="if(event.key==='Enter')doInScan()">
   </div>
-
-  <div id="psa-loading" class="alert alert-loading" style="display:none">
-    🔍 카드 정보 조회 중... (잠시 기다려주세요)
-  </div>
-  <div id="psa-result" class="alert alert-success" style="display:none"></div>
+  <div id="psa-loading" class="alert alert-loading" style="display:none">🔍 카드 정보 조회 중...</div>
+  <div id="psa-result" class="alert alert-ok" style="display:none"></div>
 
   <div id="in-form" style="display:none" class="card">
-    <div id="in-title" style="font-size:15px;font-weight:700;margin-bottom:4px;color:var(--green-dark)"></div>
-    <div class="form-grid">
+    <div class="flex-between" style="margin-bottom:10px">
+      <div id="in-title" style="font-size:14px;font-weight:700;color:var(--green)"></div>
+      <div class="flex">
+        <button class="btn btn-ghost btn-sm" onclick="resetInForm()">초기화</button>
+        <button class="btn btn-danger btn-sm" onclick="cancelIn()">취소</button>
+      </div>
+    </div>
+    <div class="form-row">
       <div class="fg">
         <label>상품 타입</label>
         <select id="in-type" onchange="toggleInFields()">
@@ -195,9 +182,18 @@ tr:hover td { background: rgba(143,188,110,0.05); }
           <option value="BGS">BGS</option>
         </select>
       </div>
+      <div class="fg" id="lang-field">
+        <label>언어</label>
+        <select id="in-language">
+          <option value="">미지정</option>
+          <option value="JP">JP (일본)</option>
+          <option value="KR">KR (한국)</option>
+          <option value="EN">EN (영어)</option>
+        </select>
+      </div>
       <div class="fg full">
         <label>상품명</label>
-        <input type="text" id="in-name" placeholder="상품명">
+        <input type="text" id="in-name" placeholder="상품명 (비워두면 나중에 입력 가능)">
       </div>
       <div class="fg" id="grade-field">
         <label>등급</label>
@@ -208,33 +204,28 @@ tr:hover td { background: rgba(143,188,110,0.05); }
         <input type="text" id="in-variety" placeholder="예: SPECIAL ART RARE">
       </div>
       <div class="fg">
-        <label>언어</label>
-        <select id="in-language">
-          <option value="JP">JP (일본)</option>
-          <option value="KR">KR (한국)</option>
-          <option value="EN">EN (영어)</option>
-        </select>
-      </div>
-      <div class="fg" id="packs-field" style="display:none">
-        <label>팩 수 (박스만)</label>
-        <input type="number" id="in-packs" placeholder="예: 30">
-      </div>
-      <div class="fg">
         <label>입고 수량</label>
         <input type="number" id="in-qty" value="1" min="1">
       </div>
       <div class="fg">
-        <label>구매가 (원)</label>
+        <label>구매가 (원) *필수</label>
         <input type="number" id="in-cost" placeholder="0" step="100">
       </div>
       <div class="fg" id="sellprice-field" style="display:none">
         <label>판매가 (원)</label>
         <input type="number" id="in-sell" placeholder="0" step="100">
       </div>
+      <div class="fg">
+        <label>부가세</label>
+        <select id="in-tax">
+          <option value="none">없음</option>
+          <option value="included">포함 (÷1.1)</option>
+          <option value="separate">별도 (+10%)</option>
+        </select>
+      </div>
     </div>
     <div class="mt flex">
       <button class="btn btn-primary" onclick="confirmIn()">입고 등록</button>
-      <button class="btn btn-ghost" onclick="cancelIn()">취소</button>
     </div>
   </div>
 </div>
@@ -242,54 +233,62 @@ tr:hover td { background: rgba(143,188,110,0.05); }
 <!-- 출고 -->
 <div id="tab-out" class="tab">
   <div class="scan-box">
-    <p>판매할 상품 스캔</p>
-    <input class="scan-input" id="out-bc" placeholder="스캔..."
-      onkeydown="if(event.key==='Enter')doOutScan()">
+    <p>판매할 상품 QR / 바코드 스캔</p>
+    <input class="scan-input" id="out-bc" placeholder="스캔..." onkeydown="if(event.key==='Enter')doOutScan()">
   </div>
   <div id="cart-wrap" style="display:none" class="card">
     <div class="flex-between">
-      <span class="section-title" style="margin:0">🛒 장바구니</span>
+      <span class="sec-title" style="margin:0">🛒 장바구니</span>
       <button class="btn btn-ghost btn-sm" onclick="clearCart()">전체삭제</button>
     </div>
     <div id="cart-body" style="margin-top:10px"></div>
     <div class="divider"></div>
-    <div class="flex-between" style="margin-bottom:12px">
+    <div class="flex-between" style="margin-bottom:10px">
       <span style="font-weight:700">합계</span>
-      <span id="cart-total" style="font-size:22px;font-weight:800;color:var(--green-dark)">0원</span>
+      <span id="cart-total" style="font-size:20px;font-weight:800;color:var(--green)">0원</span>
     </div>
-    <div class="form-grid">
+    <div class="form-row">
       <div class="fg">
         <label>결제수단</label>
         <select id="pay-method">
-          <option value="card">카드</option>
+          <option value="card">카드 (VAT 포함)</option>
           <option value="cash">현금</option>
           <option value="transfer">계좌이체</option>
         </select>
       </div>
+      <div class="fg">
+        <label>출고 타입</label>
+        <select id="out-type">
+          <option value="sale">일반 판매</option>
+          <option value="oripa">오리파 전환</option>
+        </select>
+      </div>
     </div>
-    <button class="btn btn-success mt" style="width:100%;padding:13px;font-size:15px" onclick="confirmSale()">결제 완료 → 재고 차감</button>
+    <button class="btn btn-success mt" style="width:100%;padding:12px;font-size:14px" onclick="confirmSale()">완료 → 재고 차감</button>
   </div>
 </div>
 
 <!-- 재고 -->
 <div id="tab-stock" class="tab">
-  <div class="flex-between" style="margin-bottom:14px">
-    <span class="section-title" style="margin:0">재고현황</span>
+  <div id="low-stock-wrap" style="display:none" class="low-stock-alert">
+    <div class="title">⚠️ 재고 부족 상품</div>
+    <div id="low-stock-items" class="low-stock-items"></div>
+  </div>
+
+  <div class="flex-between" style="margin-bottom:12px">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchStockTab('product',this)">일반상품</button>
+      <button class="tab-btn" onclick="switchStockTab('graded',this)">등급카드</button>
+    </div>
     <div class="flex">
-      <select id="stock-type-filter" onchange="renderStock()" class="search-bar">
-        <option value="all">전체</option>
-        <option value="graded">등급카드</option>
-        <option value="product">일반상품</option>
-      </select>
-      <input placeholder="검색..." id="stock-q" oninput="renderStock()" class="search-bar" style="width:160px">
+      <input placeholder="검색..." id="stock-q" oninput="renderStock()" class="sb" style="width:150px">
     </div>
   </div>
+
   <div class="card">
     <div class="table-wrap">
-      <table>
-        <thead><tr>
-          <th>상품명</th><th>타입</th><th>등급</th><th>레어도</th><th>언어</th><th>재고</th><th>매입가</th><th>판매가</th>
-        </tr></thead>
+      <table id="stock-table">
+        <thead id="stock-thead"></thead>
         <tbody id="stock-body"></tbody>
       </table>
     </div>
@@ -298,20 +297,24 @@ tr:hover td { background: rgba(143,188,110,0.05); }
 
 <!-- 내역 -->
 <div id="tab-history" class="tab">
-  <div class="flex-between" style="margin-bottom:14px">
-    <span class="section-title" style="margin:0">거래내역</span>
-    <select id="hist-filter" onchange="renderHistory()" class="search-bar">
-      <option value="all">전체</option>
-      <option value="in">입고</option>
-      <option value="out">출고</option>
-      <option value="oripa_out">오리파 출고</option>
-    </select>
+  <div class="flex-between" style="margin-bottom:12px">
+    <span class="sec-title" style="margin:0">거래내역</span>
+    <div class="flex" style="flex-wrap:wrap;gap:6px">
+      <input type="date" id="hist-from" onchange="renderHistory()" class="sb">
+      <input type="date" id="hist-to" onchange="renderHistory()" class="sb">
+      <select id="hist-filter" onchange="renderHistory()" class="sb">
+        <option value="all">전체</option>
+        <option value="in">입고</option>
+        <option value="out">판매</option>
+        <option value="oripa_out">오리파 출고</option>
+      </select>
+    </div>
   </div>
   <div class="card">
     <div class="table-wrap">
       <table>
         <thead><tr>
-          <th>일시</th><th>구분</th><th>상품명</th><th>수량</th><th>단가</th><th>금액</th><th>결제</th>
+          <th>일시</th><th>구분</th><th>상품명</th><th>수량</th><th>단가</th><th>금액</th><th>부가세</th><th>결제</th>
         </tr></thead>
         <tbody id="hist-body"></tbody>
       </table>
@@ -322,16 +325,16 @@ tr:hover td { background: rgba(143,188,110,0.05); }
 <!-- 수익 -->
 <div id="tab-profit" class="tab">
   <div class="stats">
-    <div class="stat"><div class="stat-label">총 매출</div><div class="stat-val" style="color:var(--green-dark)" id="p-rev">-</div></div>
-    <div class="stat"><div class="stat-label">총 매입원가</div><div class="stat-val" style="color:#dc3c3c" id="p-cost">-</div></div>
+    <div class="stat"><div class="stat-label">총 매출</div><div class="stat-val" style="color:var(--green)" id="p-rev">-</div></div>
+    <div class="stat"><div class="stat-label">매입원가</div><div class="stat-val" style="color:var(--red)" id="p-cost">-</div></div>
     <div class="stat"><div class="stat-label">수익</div><div class="stat-val" style="color:var(--orange)" id="p-profit">-</div></div>
-    <div class="stat"><div class="stat-label">재고원가</div><div class="stat-val" style="color:var(--green-mid)" id="p-stock">-</div></div>
+    <div class="stat"><div class="stat-label">재고원가</div><div class="stat-val" style="color:var(--green2)" id="p-stock">-</div></div>
   </div>
   <div class="card">
-    <div class="section-title">월별 매출</div>
+    <div class="sec-title">월별 매출</div>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>월</th><th>매출</th><th>원가</th><th>수익</th></tr></thead>
+        <thead><tr><th>월</th><th>매출</th><th>원가</th><th>수익</th><th>수익률</th></tr></thead>
         <tbody id="monthly-body"></tbody>
       </table>
     </div>
@@ -340,12 +343,47 @@ tr:hover td { background: rgba(143,188,110,0.05); }
 
 </main>
 
+<!-- 재고 수정 모달 -->
+<div class="modal-bg" id="modal-edit">
+  <div class="modal">
+    <div class="modal-title" id="edit-modal-title">재고 수정</div>
+    <div class="form-row">
+      <div class="fg full"><label>상품명</label><input id="edit-name"></div>
+      <div class="fg"><label>언어</label>
+        <select id="edit-language">
+          <option value="">미지정</option>
+          <option value="JP">JP</option>
+          <option value="KR">KR</option>
+          <option value="EN">EN</option>
+        </select>
+      </div>
+      <div class="fg"><label>재고 수량</label><input type="number" id="edit-qty"></div>
+      <div class="fg"><label>평균매입가</label><input type="number" id="edit-cost" step="100"></div>
+      <div class="fg"><label>판매가</label><input type="number" id="edit-sell" step="100"></div>
+      <div class="fg"><label>상태</label>
+        <select id="edit-status">
+          <option value="available">재고</option>
+          <option value="oripa">오리파</option>
+          <option value="sold">판매완료</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-edit')">취소</button>
+      <button class="btn btn-primary" onclick="saveEdit()">저장</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
 const API = 'https://golednmuseum-production.up.railway.app';
 let cart = [];
 let stockCache = { products: [], graded: [] };
+let txCache = [];
+let editTarget = null;
+let currentStockTab = 'product';
 
 function goTab(name, btn) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -357,53 +395,34 @@ function goTab(name, btn) {
   if (name === 'profit') loadProfit();
 }
 
-// QR URL 파싱
 function parseInput(input) {
   input = input.trim();
-  // PSA URL
   if (input.includes('psacard.com')) {
     const m = input.match(/cert\/(\d+)/);
     return m ? { type: 'graded', grader: 'PSA', id: m[1] } : null;
   }
-  // CGC URL
   if (input.includes('cgccards.com')) {
     const m = input.match(/certlookup\/(\d+)/);
     return m ? { type: 'graded', grader: 'CGC', id: m[1] } : null;
   }
-  // 숫자 8-10자리 → PSA 써티 (바코드)
-  if (/^\d{8,10}$/.test(input)) {
-    return { type: 'graded', grader: 'PSA', id: input };
-  }
-  // 나머지 → 일반 바코드
+  if (/^\d{8,10}$/.test(input)) return { type: 'graded', grader: 'PSA', id: input };
   return { type: 'product', id: input };
 }
 
-// 국가 자동판별 (바코드)
-function detectLanguage(bc) {
-  if (/^4902370|^4521329|^4580117|^4521/.test(bc)) return 'JP';
-  if (/^8809|^8801/.test(bc)) return 'KR';
-  if (/^820650|^74427/.test(bc)) return 'EN';
-  return 'JP';
-}
-
-// PSA 브랜드에서 언어 추출
-function detectLangFromBrand(brand) {
-  if (!brand) return 'EN';
-  const b = brand.toUpperCase();
-  if (b.includes('JAPANESE')) return 'JP';
-  if (b.includes('KOREAN')) return 'KR';
-  return 'EN';
+function detectLang(bc) {
+  if (/^880/.test(bc)) return 'KR';
+  if (/^49[0-9]|^45[2-8]/.test(bc)) return 'JP';
+  if (/^0[0-9]{2}|^1[0-3]/.test(bc)) return 'EN';
+  return '';
 }
 
 async function doInScan() {
   const raw = document.getElementById('in-bc').value.trim();
   if (!raw) return;
-
   const parsed = parseInput(raw);
-  if (!parsed) { toast('인식할 수 없는 입력입니다', 'err'); return; }
+  if (!parsed) { toast('인식 불가', 'err'); return; }
 
   document.getElementById('in-form').style.display = 'block';
-  document.getElementById('in-name').value = '';
   document.getElementById('in-grade').value = '';
   document.getElementById('in-variety').value = '';
   document.getElementById('in-cost').value = '';
@@ -412,67 +431,92 @@ async function doInScan() {
   if (parsed.type === 'graded') {
     document.getElementById('in-type').value = 'graded';
     document.getElementById('in-grader').value = parsed.grader;
-    document.getElementById('in-title').textContent = `${parsed.grader} 등급카드 입고`;
+    document.getElementById('in-title').textContent = parsed.grader + ' 등급카드 입고';
     toggleInFields();
 
-    document.getElementById('psa-loading').style.display = 'block';
-    document.getElementById('psa-result').style.display = 'none';
+    // 기존 등급카드 확인
+    const existing = stockCache.graded.find(g => g.cert_number === parsed.id);
+    if (existing) {
+      document.getElementById('in-name').value = existing.card_name || '';
+      document.getElementById('in-grade').value = existing.grade || '';
+      document.getElementById('in-variety').value = existing.variety || '';
+      if (existing.language) document.getElementById('in-language').value = existing.language;
+      showResult('ok', '✅ 기존 등록 카드: ' + (existing.card_name || parsed.id));
+      return;
+    }
 
-    try {
-      const endpoint = parsed.grader === 'CGC' ? `${API}/cgc?cert=${parsed.id}` : `${API}/psa?cert=${parsed.id}`;
-      const res = await fetch(endpoint);
-      const data = await res.json();
-      document.getElementById('psa-loading').style.display = 'none';
-
-      if (data.cardName) {
-        document.getElementById('in-name').value = data.cardName;
-        document.getElementById('in-grade').value = data.grade || '';
-        document.getElementById('in-variety').value = data.variety || '';
-        if (data.language) document.getElementById('in-language').value = data.language;
-        document.getElementById('psa-result').style.display = 'block';
-        document.getElementById('psa-result').className = 'alert alert-success';
-        document.getElementById('psa-result').innerHTML = `
-          <strong style="color:var(--green-dark)">✅ 조회 완료 (${parsed.grader})</strong><br>
-          ${data.cardName} · ${data.grade}${data.variety ? ' · ' + data.variety : ''}${data.language ? ' · ' + data.language : ''}
-        `;
-      } else {
-        document.getElementById('psa-result').style.display = 'block';
-        document.getElementById('psa-result').className = 'alert alert-warn';
-        document.getElementById('psa-result').innerHTML = `⚠️ 자동 조회 실패 — 직접 입력해주세요`;
+    if (parsed.grader === 'PSA') {
+      document.getElementById('psa-loading').style.display = 'block';
+      document.getElementById('psa-result').style.display = 'none';
+      document.getElementById('in-name').value = '';
+      try {
+        const res = await fetch(`${API}/psa?cert=${parsed.id}`);
+        const data = await res.json();
+        document.getElementById('psa-loading').style.display = 'none';
+        if (data.cardName) {
+          document.getElementById('in-name').value = data.cardName;
+          document.getElementById('in-grade').value = data.grade || '';
+          document.getElementById('in-variety').value = data.variety || '';
+          if (data.language) document.getElementById('in-language').value = data.language;
+          showResult('ok', '✅ PSA 조회 완료: ' + data.cardName + ' · ' + data.grade);
+        } else {
+          showResult('warn', '⚠️ 조회 실패 — 직접 입력해주세요');
+        }
+      } catch(e) {
+        document.getElementById('psa-loading').style.display = 'none';
+        showResult('warn', '⚠️ 서버 오류 — 직접 입력해주세요');
       }
-    } catch (e) {
-      document.getElementById('psa-loading').style.display = 'none';
-      document.getElementById('psa-result').style.display = 'block';
-      document.getElementById('psa-result').className = 'alert alert-err';
-      document.getElementById('psa-result').innerHTML = `❌ 서버 오류 — 직접 입력해주세요`;
+    } else {
+      document.getElementById('in-name').value = '';
+      showResult('warn', parsed.grader + ' — 정보 직접 입력해주세요');
     }
   } else {
     document.getElementById('in-type').value = 'box';
     document.getElementById('in-title').textContent = '상품 입고';
-    document.getElementById('in-language').value = detectLanguage(parsed.id);
     toggleInFields();
+    const lang = detectLang(parsed.id);
+    if (lang) document.getElementById('in-language').value = lang;
 
     const existing = stockCache.products.find(p => p.barcode === parsed.id);
     if (existing) {
       document.getElementById('in-name').value = existing.name;
-      document.getElementById('in-sell').value = existing.sell_price || '';
-      if (existing.packs) document.getElementById('in-packs').value = existing.packs;
-      toast(`기존 상품: ${existing.name}`, '');
+      if (existing.sell_price) document.getElementById('in-sell').value = existing.sell_price;
+      if (existing.country) document.getElementById('in-language').value = existing.country;
+      showResult('ok', '✅ 기존 상품: ' + existing.name + ' (현재 재고: ' + existing.qty + ')');
+    } else {
+      document.getElementById('in-name').value = '';
+      showResult('warn', '새 상품 — 상품명을 입력해주세요');
     }
   }
   document.getElementById('in-cost').focus();
 }
 
+function showResult(type, msg) {
+  const el = document.getElementById('psa-result');
+  el.style.display = 'block';
+  el.className = 'alert alert-' + (type === 'ok' ? 'ok' : 'warn');
+  el.textContent = msg;
+}
+
 function toggleInFields() {
   const type = document.getElementById('in-type').value;
   const isGraded = type === 'graded';
-  const isBox = type === 'box';
-  const isPack = type === 'pack';
-  document.getElementById('grader-field').style.display = isGraded ? 'block' : 'none';
-  document.getElementById('grade-field').style.display = isGraded ? 'block' : 'none';
-  document.getElementById('variety-field').style.display = isGraded ? 'block' : 'none';
-  document.getElementById('packs-field').style.display = isBox ? 'block' : 'none';
-  document.getElementById('sellprice-field').style.display = (isBox || isPack) ? 'block' : 'none';
+  const isBox = type === 'box' || type === 'pack';
+  document.getElementById('grader-field').style.display = isGraded ? '' : 'none';
+  document.getElementById('grade-field').style.display = isGraded ? '' : 'none';
+  document.getElementById('variety-field').style.display = isGraded ? '' : 'none';
+  document.getElementById('sellprice-field').style.display = isBox ? '' : 'none';
+}
+
+function resetInForm() {
+  document.getElementById('in-name').value = '';
+  document.getElementById('in-grade').value = '';
+  document.getElementById('in-variety').value = '';
+  document.getElementById('in-cost').value = '';
+  document.getElementById('in-sell').value = '';
+  document.getElementById('in-qty').value = 1;
+  document.getElementById('in-language').value = '';
+  document.getElementById('psa-result').style.display = 'none';
 }
 
 async function confirmIn() {
@@ -480,36 +524,38 @@ async function confirmIn() {
   const parsed = parseInput(raw);
   const type = document.getElementById('in-type').value;
   const name = document.getElementById('in-name').value.trim();
-  const cost = parseFloat(document.getElementById('in-cost').value) || 0;
+  const costRaw = parseFloat(document.getElementById('in-cost').value) || 0;
   const qty = parseInt(document.getElementById('in-qty').value) || 1;
   const language = document.getElementById('in-language').value;
+  const tax = document.getElementById('in-tax').value;
 
-  if (!name) { toast('상품명을 입력해주세요', 'err'); return; }
+  if (!costRaw) { toast('구매가를 입력해주세요', 'err'); return; }
+
+  let cost = costRaw;
+  if (tax === 'included') cost = costRaw / 1.1;
+  else if (tax === 'separate') cost = costRaw * 1.1;
 
   if (type === 'graded') {
     const grade = document.getElementById('in-grade').value.trim();
     const variety = document.getElementById('in-variety').value.trim();
     const grader = document.getElementById('in-grader').value;
     const res = await fetch(`${API}/graded-cards`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ cert_number: parsed.id, card_name: name, grade, variety, grader, language, avg_cost: cost })
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ cert_number: parsed.id, card_name: name || parsed.id, grade, variety, grader, language, avg_cost: cost })
     });
     const data = await res.json();
     if (data.error) { toast(data.error, 'err'); return; }
   } else {
-    const packs = parseInt(document.getElementById('in-packs').value) || null;
     const sellPrice = parseFloat(document.getElementById('in-sell').value) || null;
     const res = await fetch(`${API}/products`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ barcode: parsed.id, name, type, country: language, packs, sell_price: sellPrice, avg_cost: cost, qty })
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ barcode: parsed.id, name: name || parsed.id, type, country: language, sell_price: sellPrice, avg_cost: cost, qty })
     });
     const data = await res.json();
     if (data.error) { toast(data.error, 'err'); return; }
   }
 
-  toast(`✅ 입고 완료: ${name}`);
+  toast('✅ 입고 완료: ' + (name || parsed.id));
   cancelIn();
   await loadStockData();
 }
@@ -531,15 +577,15 @@ async function doOutScan() {
   let item = null;
   if (parsed.type === 'graded') {
     const found = stockCache.graded.find(g => g.cert_number === parsed.id && g.status === 'available');
-    if (found) item = { id: found.id, name: `${found.card_name} ${found.grade}`, price: 0, cost: found.avg_cost, product_type: 'graded_card', qty: 1 };
+    if (found) item = { id: found.id, name: found.card_name + ' ' + found.grade, subInfo: (found.language || '') + (found.grader ? ' · ' + found.grader : ''), price: 0, cost: found.avg_cost, product_type: 'graded_card', qty: 1, stock: 1 };
   } else {
     const found = stockCache.products.find(p => p.barcode === parsed.id && p.qty > 0);
-    if (found) item = { id: found.id, name: found.name, price: found.sell_price || 0, cost: found.avg_cost, product_type: 'product', qty: 1 };
+    if (found) item = { id: found.id, name: found.name, subInfo: (found.country || '') + ' · 재고 ' + found.qty, price: found.sell_price || 0, cost: found.avg_cost, product_type: 'product', qty: 1, stock: found.qty };
   }
 
-  if (!item) { toast('재고 없음 또는 미등록 상품', 'err'); return; }
+  if (!item) { toast('재고 없음 또는 미등록', 'err'); return; }
   const ex = cart.find(c => c.id === item.id && c.product_type === item.product_type);
-  if (ex) ex.qty++;
+  if (ex) { if (ex.qty >= item.stock) { toast('재고 초과', 'err'); return; } ex.qty++; }
   else cart.push(item);
   document.getElementById('out-bc').value = '';
   document.getElementById('out-bc').focus();
@@ -552,12 +598,15 @@ function renderCart() {
   wrap.style.display = 'block';
   document.getElementById('cart-body').innerHTML = cart.map((item, i) => `
     <div class="cart-item">
-      <span style="flex:2;font-size:13px">${item.name}</span>
+      <div style="flex:2">
+        <div style="font-size:13px;font-weight:600">${item.name}</div>
+        <div style="font-size:11px;color:var(--text2)">${item.subInfo} · 매입가 ${fmt(Math.round(item.cost))}원</div>
+      </div>
       <span style="color:var(--text2);font-size:12px">×${item.qty}</span>
       <input type="number" value="${item.price}" placeholder="판매가" step="100"
-        style="width:120px;padding:7px 9px;font-size:13px"
+        style="width:110px;padding:6px 8px;font-size:13px"
         oninput="cart[${i}].price=parseFloat(this.value)||0;calcCartTotal()">
-      <button class="btn btn-ghost btn-sm" onclick="cart.splice(${i},1);renderCart()">✕</button>
+      <button class="btn btn-ghost btn-xs" onclick="cart.splice(${i},1);renderCart()">✕</button>
     </div>
   `).join('');
   calcCartTotal();
@@ -571,16 +620,18 @@ function calcCartTotal() {
 function clearCart() { cart = []; renderCart(); }
 
 async function confirmSale() {
-  if (!cart.length) { toast('장바구니가 비어있음', 'err'); return; }
+  if (!cart.length) { toast('장바구니 비어있음', 'err'); return; }
   const pay = document.getElementById('pay-method').value;
+  const outType = document.getElementById('out-type').value;
+  const txType = outType === 'oripa' ? 'oripa_out' : 'out';
+
   const res = await fetch(`${API}/sell`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ items: cart.map(c => ({ product_id: c.id, product_type: c.product_type, name: c.name, qty: c.qty, price: c.price, cost: c.cost })), pay_method: pay })
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ items: cart.map(c => ({ product_id: c.id, product_type: c.product_type, name: c.name, qty: c.qty, price: c.price, cost: c.cost })), pay_method: pay, tx_type: txType })
   });
   const data = await res.json();
   if (data.error) { toast(data.error, 'err'); return; }
-  toast(`✅ 판매 완료 (${cart.length}개)`);
+  toast(outType === 'oripa' ? '✅ 오리파 전환 완료' : '✅ 판매 완료');
   cart = []; renderCart();
   await loadStockData();
 }
@@ -597,71 +648,139 @@ async function loadStockData() {
 async function loadStock() {
   await loadStockData();
   renderStock();
+  renderLowStock();
+}
+
+function switchStockTab(tab, btn) {
+  currentStockTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderStock();
+}
+
+function renderLowStock() {
+  const low = stockCache.products.filter(p => p.qty > 0 && p.qty <= 3);
+  const wrap = document.getElementById('low-stock-wrap');
+  if (!low.length) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+  document.getElementById('low-stock-items').innerHTML = low.map(p =>
+    `<span class="low-stock-item">${p.name} (${p.qty})`).join('');
 }
 
 function renderStock() {
   const q = (document.getElementById('stock-q').value || '').toLowerCase();
-  const typeFilter = document.getElementById('stock-type-filter').value;
   const tb = document.getElementById('stock-body');
-  let rows = [];
+  const thead = document.getElementById('stock-thead');
 
-  if (typeFilter !== 'graded') {
-    stockCache.products.filter(p => !q || p.name.toLowerCase().includes(q)).forEach(p => {
-      rows.push(`<tr>
-        <td><strong>${p.name}</strong>${p.packs ? `<br><span style="font-size:11px;color:var(--text2)">${p.packs}팩</span>` : ''}</td>
-        <td><span class="badge" style="background:rgba(143,188,110,0.2);color:var(--green-dark)">${typeLabel(p.type)}</span></td>
-        <td>-</td><td>-</td>
-        <td>${langBadge(p.country)}</td>
-        <td class="${p.qty <= 0 ? 'qty-zero' : p.qty <= 3 ? 'qty-low' : 'qty-ok'}">${p.qty}</td>
-        <td>${fmt(Math.round(p.avg_cost))}원</td>
-        <td>${p.sell_price ? fmt(p.sell_price) + '원' : '-'}</td>
-      </tr>`);
+  if (currentStockTab === 'product') {
+    thead.innerHTML = '<tr><th>상품명</th><th>타입</th><th>언어</th><th>재고</th><th>매입가</th><th>판매가</th><th></th></tr>';
+    const rows = stockCache.products.filter(p => !q || p.name.toLowerCase().includes(q));
+    tb.innerHTML = rows.length ? rows.map(p => `<tr onclick="openEdit('product','${p.id}')">
+      <td><strong>${p.name}</strong></td>
+      <td><span class="badge" style="background:rgba(74,124,63,0.1);color:var(--green)">${typeLabel(p.type)}</span></td>
+      <td>${langBadge(p.country)}</td>
+      <td class="${p.qty<=0?'qty-zero':p.qty<=3?'qty-low':'qty-ok'}">${p.qty}</td>
+      <td>${fmt(Math.round(p.avg_cost))}원</td>
+      <td>${p.sell_price ? fmt(p.sell_price)+'원' : '-'}</td>
+      <td><button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();openEdit('product','${p.id}')">수정</button></td>
+    </tr>`).join('') : '<tr><td colspan="7" class="empty">일반상품 없음</td></tr>';
+  } else {
+    thead.innerHTML = '<tr><th>카드명</th><th>그레이딩사</th><th>등급</th><th>레어도</th><th>언어</th><th>매입가</th><th>상태</th><th></th></tr>';
+    const rows = stockCache.graded.filter(g => !q || (g.card_name||'').toLowerCase().includes(q));
+    tb.innerHTML = rows.length ? rows.map(g => `<tr onclick="openEdit('graded','${g.id}')">
+      <td><strong>${g.card_name || g.cert_number}</strong></td>
+      <td><span class="badge badge-${(g.grader||'psa').toLowerCase()}">${g.grader||'PSA'}</span></td>
+      <td>${g.grade||'-'}</td>
+      <td style="font-size:12px;color:var(--text2)">${g.variety||'-'}</td>
+      <td>${langBadge(g.language)}</td>
+      <td>${fmt(Math.round(g.avg_cost))}원</td>
+      <td><span class="badge ${g.status==='oripa'?'badge-oripa':g.status==='sold'?'badge-out':'badge-in'}">${g.status==='oripa'?'오리파':g.status==='sold'?'판매완료':'재고'}</span></td>
+      <td><button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();openEdit('graded','${g.id}')">수정</button></td>
+    </tr>`).join('') : '<tr><td colspan="8" class="empty">등급카드 없음</td></tr>';
+  }
+}
+
+function openEdit(type, id) {
+  const item = type === 'product'
+    ? stockCache.products.find(p => String(p.id) === String(id))
+    : stockCache.graded.find(g => String(g.id) === String(id));
+  if (!item) return;
+  editTarget = { type, id };
+  document.getElementById('edit-modal-title').textContent = type === 'product' ? '일반상품 수정' : '등급카드 수정';
+  document.getElementById('edit-name').value = item.name || item.card_name || '';
+  document.getElementById('edit-language').value = item.country || item.language || '';
+  document.getElementById('edit-qty').value = item.qty || 1;
+  document.getElementById('edit-cost').value = item.avg_cost || 0;
+  document.getElementById('edit-sell').value = item.sell_price || '';
+  document.getElementById('edit-status').value = item.status || 'available';
+  document.getElementById('modal-edit').classList.add('open');
+}
+
+async function saveEdit() {
+  if (!editTarget) return;
+  const name = document.getElementById('edit-name').value.trim();
+  const language = document.getElementById('edit-language').value;
+  const qty = parseInt(document.getElementById('edit-qty').value) || 0;
+  const cost = parseFloat(document.getElementById('edit-cost').value) || 0;
+  const sell = parseFloat(document.getElementById('edit-sell').value) || null;
+  const status = document.getElementById('edit-status').value;
+
+  if (editTarget.type === 'product') {
+    await fetch(`${API}/products/${editTarget.id}`, {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, country: language, qty, avg_cost: cost, sell_price: sell, status })
+    });
+  } else {
+    await fetch(`${API}/graded-cards/${editTarget.id}`, {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ card_name: name, language, avg_cost: cost, status })
     });
   }
-
-  if (typeFilter !== 'product') {
-    stockCache.graded.filter(g => g.status !== 'sold' && (!q || (g.card_name || '').toLowerCase().includes(q))).forEach(g => {
-      rows.push(`<tr>
-        <td><strong>${g.card_name || '-'}</strong></td>
-        <td><span class="badge badge-${(g.grader||'psa').toLowerCase()}">${g.grader || 'PSA'}</span></td>
-        <td>${g.grade || '-'}</td>
-        <td style="font-size:12px;color:var(--text2)">${g.variety || '-'}</td>
-        <td>${langBadge(g.language || g.country)}</td>
-        <td class="${g.status === 'oripa' ? 'qty-low' : 'qty-ok'}">${g.status === 'oripa' ? '오리파' : '1'}</td>
-        <td>${fmt(Math.round(g.avg_cost))}원</td>
-        <td>-</td>
-      </tr>`);
-    });
-  }
-
-  tb.innerHTML = rows.length ? rows.join('') : '<tr><td colspan="8" class="empty">재고 없음</td></tr>';
+  closeModal('modal-edit');
+  toast('✅ 수정 완료');
+  await loadStockData();
+  renderStock();
 }
 
 async function loadHistory() {
   const res = await fetch(`${API}/transactions`).catch(() => ({ json: () => [] }));
-  const txs = await res.json();
+  txCache = await res.json();
+  renderHistory();
+}
+
+function renderHistory() {
   const f = document.getElementById('hist-filter').value;
-  const list = f === 'all' ? txs : txs.filter(t => t.type === f);
+  const from = document.getElementById('hist-from').value;
+  const to = document.getElementById('hist-to').value;
+
+  let list = txCache;
+  if (f !== 'all') list = list.filter(t => t.type === f);
+  if (from) list = list.filter(t => t.created_at >= from);
+  if (to) list = list.filter(t => t.created_at <= to + 'T23:59:59');
+
   const tb = document.getElementById('hist-body');
-  if (!list.length) { tb.innerHTML = '<tr><td colspan="7" class="empty">내역 없음</td></tr>'; return; }
-  tb.innerHTML = list.slice(0, 200).map(t => `<tr>
+  if (!list.length) { tb.innerHTML = '<tr><td colspan="8" class="empty">내역 없음</td></tr>'; return; }
+  tb.innerHTML = list.slice(0, 300).map(t => `<tr>
     <td style="font-size:11px;color:var(--text2)">${fmtDate(t.created_at)}</td>
     <td>${txBadge(t.type)}</td>
     <td>${t.name}</td>
     <td>${t.qty}</td>
-    <td>${fmt(Math.round(t.price || 0))}원</td>
-    <td style="font-weight:700">${fmt(Math.round(t.total || 0))}원</td>
+    <td>${fmt(Math.round(t.price||0))}원</td>
+    <td style="font-weight:700">${fmt(Math.round(t.total||0))}원</td>
+    <td style="font-size:12px;color:var(--text2)">${t.pay_method === 'card' ? 'VAT포함' : '-'}</td>
     <td style="font-size:12px">${payLabel(t.pay_method)}</td>
   </tr>`).join('');
 }
 
 async function loadProfit() {
-  const res = await fetch(`${API}/transactions`).catch(() => ({ json: () => [] }));
-  const txs = await res.json();
-  const outTxs = txs.filter(t => t.type === 'out');
-  const rev = outTxs.reduce((s, t) => s + (t.total || 0), 0);
-  const cost = outTxs.reduce((s, t) => s + (t.cost || 0) * (t.qty || 1), 0);
+  if (!txCache.length) {
+    const res = await fetch(`${API}/transactions`).catch(() => ({ json: () => [] }));
+    txCache = await res.json();
+  }
   await loadStockData();
+  const outTxs = txCache.filter(t => t.type === 'out');
+  const rev = outTxs.reduce((s, t) => s + (t.total||0), 0);
+  const cost = outTxs.reduce((s, t) => s + (t.cost||0) * (t.qty||1), 0);
   const stockVal = stockCache.products.reduce((s, p) => s + p.avg_cost * p.qty, 0)
     + stockCache.graded.filter(g => g.status === 'available').reduce((s, g) => s + g.avg_cost, 0);
 
@@ -674,16 +793,17 @@ async function loadProfit() {
   outTxs.forEach(t => {
     const m = t.created_at.slice(0, 7);
     if (!monthly[m]) monthly[m] = { rev: 0, cost: 0 };
-    monthly[m].rev += t.total || 0;
-    monthly[m].cost += (t.cost || 0) * (t.qty || 1);
+    monthly[m].rev += t.total||0;
+    monthly[m].cost += (t.cost||0) * (t.qty||1);
   });
   const months = Object.keys(monthly).sort().reverse();
   document.getElementById('monthly-body').innerHTML = months.length
     ? months.map(m => {
         const d = monthly[m]; const p = d.rev - d.cost;
-        return `<tr><td>${m}</td><td style="color:var(--green-dark)">${fmt(Math.round(d.rev))}원</td><td style="color:#dc3c3c">${fmt(Math.round(d.cost))}원</td><td style="color:${p>=0?'var(--orange)':'#dc3c3c'};font-weight:700">${p>=0?'+':''}${fmt(Math.round(p))}원</td></tr>`;
+        const rate = d.rev > 0 ? (p/d.rev*100).toFixed(1) : 0;
+        return `<tr><td>${m}</td><td style="color:var(--green)">${fmt(Math.round(d.rev))}원</td><td style="color:var(--red)">${fmt(Math.round(d.cost))}원</td><td style="color:${p>=0?'var(--orange)':'var(--red)'};font-weight:700">${p>=0?'+':''}${fmt(Math.round(p))}원</td><td>${rate}%</td></tr>`;
       }).join('')
-    : '<tr><td colspan="4" class="empty">데이터 없음</td></tr>';
+    : '<tr><td colspan="5" class="empty">데이터 없음</td></tr>';
 }
 
 function fmt(n) { return (n||0).toLocaleString('ko-KR'); }
@@ -692,28 +812,57 @@ function fmtDate(iso) {
   const d = new Date(iso);
   return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
 }
-function typeLabel(t) { return { box:'박스', pack:'팩', single:'단카', etc:'기타', graded:'등급카드' }[t] || t; }
+function typeLabel(t) { return { box:'박스', pack:'팩', single:'단카', etc:'기타', graded:'등급카드' }[t]||t; }
 function langBadge(c) {
   if (!c) return '-';
-  const cls = { JP:'badge-jp', KR:'badge-kr', EN:'badge-en' }[c] || '';
+  const cls = { JP:'badge-jp', KR:'badge-kr', EN:'badge-en' }[c]||'';
   return `<span class="badge ${cls}">${c}</span>`;
 }
 function txBadge(t) {
-  const m = { in:'입고', out:'출고', oripa_out:'오리파출고' };
+  const m = { in:'입고', out:'판매', oripa_out:'오리파출고' };
   const cls = { in:'badge-in', out:'badge-out', oripa_out:'badge-oripa' };
   return `<span class="badge ${cls[t]||''}">${m[t]||t}</span>`;
 }
-function payLabel(p) { return { card:'카드', cash:'현금', transfer:'이체', '-':'-' }[p] || p || '-'; }
+function payLabel(p) { return { card:'카드', cash:'현금', transfer:'이체', '-':'-' }[p]||p||'-'; }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
 let toastTimer;
 function toast(msg, type='') {
   const el = document.getElementById('toast');
-  el.textContent = msg; el.className = type === 'err' ? 'show err' : 'show';
+  el.textContent = msg;
+  el.className = type === 'err' ? 'show err' : type === 'warn' ? 'show warn' : 'show';
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.className = '', 2500);
 }
 
-loadStockData();
+// URL 파라미터 자동입력 (확장 프로그램 연동)
+function checkURLParams() {
+  const params = new URLSearchParams(window.location.search);
+  const name = params.get('name');
+  if (!name) return;
+  const cert = params.get('cert') || '';
+  const grade = params.get('grade') || '';
+  const variety = params.get('variety') || '';
+  const language = params.get('language') || '';
+  const grader = params.get('grader') || 'CGC';
+  document.getElementById('in-bc').value = cert;
+  document.getElementById('in-type').value = 'graded';
+  toggleInFields();
+  setTimeout(() => {
+    document.getElementById('in-grader').value = grader;
+    document.getElementById('in-name').value = name;
+    document.getElementById('in-grade').value = grade;
+    document.getElementById('in-variety').value = variety;
+    if (language) document.getElementById('in-language').value = language;
+    document.getElementById('in-form').style.display = 'block';
+    document.getElementById('in-title').textContent = grader + ' 등급카드 입고';
+    showResult('ok', '✅ ' + grader + ' 자동입력: ' + name + ' · ' + grade);
+    document.getElementById('in-cost').focus();
+    window.history.replaceState({}, '', '/');
+  }, 300);
+}
+
+loadStockData().then(checkURLParams);
 </script>
 </body>
 </html>
