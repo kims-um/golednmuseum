@@ -2,12 +2,17 @@ const express = require('express');
 const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const { createClient } = require('@supabase/supabase-js');
+const cors = require('cors');
+const path = require('path');
 
 puppeteer.use(StealthPlugin());
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+app.use(cors());
 app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -54,7 +59,6 @@ async function scrapePSA(cert, retries = 3) {
       });
 
       await browser.close();
-
       if (data.grade && data.subject) return data;
     } catch (err) {
       if (browser) await browser.close();
@@ -68,29 +72,15 @@ app.get('/psa', async (req, res) => {
   const { cert } = req.query;
   if (!cert) return res.status(400).json({ error: '써티 번호 없음' });
 
-  // DB 캐시 확인
   const { data: cached } = await supabase.from('graded_cards').select().eq('cert_number', cert).single();
   if (cached && cached.card_name) {
-    return res.json({
-      cert,
-      cardName: cached.card_name,
-      grade: cached.grade,
-      variety: cached.variety,
-      images: cached.image_url ? [cached.image_url] : [],
-      cached: true
-    });
+    return res.json({ cert, cardName: cached.card_name, grade: cached.grade, variety: cached.variety, images: cached.image_url ? [cached.image_url] : [], cached: true });
   }
 
   const data = await scrapePSA(cert);
   if (!data) return res.status(404).json({ error: '카드 정보를 찾을 수 없습니다' });
 
-  res.json({
-    cert,
-    cardName: data.subject,
-    grade: data.grade,
-    variety: data.variety,
-    images: data.images || []
-  });
+  res.json({ cert, cardName: data.subject, grade: data.grade, variety: data.variety, images: data.images || [] });
 });
 
 app.get('/products', async (req, res) => {
