@@ -29,7 +29,7 @@ app.get('/psa', async (req, res) => {
       const h1 = document.querySelector('h1');
       const cardName = h1 ? h1.textContent.trim() : '';
       const items = document.querySelectorAll('dl div');
-      let grade = '', year = '', brand = '', subject = '';
+      let grade = '', year = '', brand = '', subject = '', variety = '';
       items.forEach(item => {
         const dt = item.querySelector('dt');
         const dd = item.querySelector('dd');
@@ -40,11 +40,12 @@ app.get('/psa', async (req, res) => {
         if (label === 'Year') year = value;
         if (label === 'Brand/Title') brand = value;
         if (label === 'Subject') subject = value;
+        if (label === 'Variety/Pedigree') variety = value;
       });
       const images = Array.from(document.querySelectorAll('main img'))
         .map(img => img.src)
         .filter(src => src.includes('cloudfront.net'));
-      return { cardName, grade, year, brand, subject, images };
+      return { cardName, grade, year, brand, subject, variety, images };
     });
 
     await browser.close();
@@ -59,6 +60,7 @@ app.get('/psa', async (req, res) => {
       grade: data.grade,
       year: data.year,
       brand: data.brand,
+      variety: data.variety,
       images: data.images || []
     });
 
@@ -68,4 +70,4 @@ app.get('/psa', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => console.env(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
