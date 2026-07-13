@@ -19,17 +19,15 @@ app.get('/psa', async (req, res) => {
     });
     const page = await browser.newPage();
     await page.goto(`https://www.psacard.com/cert/${cert}/psa`, { 
-      waitUntil: 'networkidle2', 
-      timeout: 30000 
+      waitUntil: 'domcontentloaded', 
+      timeout: 60000 
     });
     
     const data = await page.evaluate(() => {
       const h1 = document.querySelector('h1');
       const cardName = h1 ? h1.textContent.trim() : '';
-      
       const items = document.querySelectorAll('dl div');
       let grade = '', year = '', brand = '', subject = '';
-      
       items.forEach(item => {
         const dt = item.querySelector('dt');
         const dd = item.querySelector('dd');
@@ -41,7 +39,6 @@ app.get('/psa', async (req, res) => {
         if (label === 'Brand/Title') brand = value;
         if (label === 'Subject') subject = value;
       });
-      
       return { cardName, grade, year, brand, subject };
     });
 
