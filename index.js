@@ -7,7 +7,6 @@ puppeteer.use(StealthPlugin());
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
 app.use(express.json());
 
 const supabase = createClient(
@@ -15,66 +14,83 @@ const supabase = createClient(
   process.env.SUPABASE_KEY
 );
 
+async function scrapePSA(cert, retries = 3) {
+  for (let i = 0; i < retries; i++) {
+    let browser;
+    try {
+      browser = await puppeteer.launch({
+        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-blink-features=AutomationControlled'],
+        headless: true
+      });
+      const page = await browser.newPage();
+      await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+      await page.setExtraHTTPHeaders({
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+      });
+      await page.goto(`https://www.psacard.com/cert/${cert}/psa`, {
+        waitUntil: 'domcontentloaded',
+        timeout: 60000
+      });
+      await new Promise(r => setTimeout(r, 5000));
+
+      const data = await page.evaluate(() => {
+        const items = document.querySelectorAll('dl div');
+        let grade = '', subject = '', variety = '';
+        items.forEach(item => {
+          const dt = item.querySelector('dt');
+          const dd = item.querySelector('dd');
+          if (!dt || !dd) return;
+          const label = dt.textContent.trim();
+          const value = dd.textContent.trim();
+          if (label === 'Item Grade') grade = value;
+          if (label === 'Subject') subject = value;
+          if (label === 'Variety/Pedigree') variety = value;
+        });
+        const images = Array.from(document.querySelectorAll('main img'))
+          .map(img => img.src)
+          .filter(src => src.includes('cloudfront.net'));
+        return { grade, subject, variety, images };
+      });
+
+      await browser.close();
+
+      if (data.grade && data.subject) return data;
+    } catch (err) {
+      if (browser) await browser.close();
+    }
+    await new Promise(r => setTimeout(r, 2000));
+  }
+  return null;
+}
+
 app.get('/psa', async (req, res) => {
   const { cert } = req.query;
   if (!cert) return res.status(400).json({ error: '써티 번호 없음' });
 
-  let browser;
-  try {
-    browser = await puppeteer.launch({
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      headless: true
-    });
-    const page = await browser.newPage();
-    await page.goto(`https://www.psacard.com/cert/${cert}/psa`, {
-      waitUntil: 'domcontentloaded',
-      timeout: 60000
-    });
-    await new Promise(r => setTimeout(r, 10000));
-
-    const data = await page.evaluate(() => {
-      const h1 = document.querySelector('h1');
-      const cardName = h1 ? h1.textContent.trim() : '';
-      const items = document.querySelectorAll('dl div');
-      let grade = '', year = '', brand = '', subject = '', variety = '';
-      items.forEach(item => {
-        const dt = item.querySelector('dt');
-        const dd = item.querySelector('dd');
-        if (!dt || !dd) return;
-        const label = dt.textContent.trim();
-        const value = dd.textContent.trim();
-        if (label === 'Item Grade') grade = value;
-        if (label === 'Year') year = value;
-        if (label === 'Brand/Title') brand = value;
-        if (label === 'Subject') subject = value;
-        if (label === 'Variety/Pedigree') variety = value;
-      });
-      const images = Array.from(document.querySelectorAll('main img'))
-        .map(img => img.src)
-        .filter(src => src.includes('cloudfront.net'));
-      return { cardName, grade, year, brand, subject, variety, images };
-    });
-
-    await browser.close();
-
-    if (!data.grade && !data.subject) {
-      return res.status(404).json({ error: '카드 정보를 찾을 수 없습니다', debug: data });
-    }
-
-    res.json({
+  // DB 캐시 확인
+  const { data: cached } = await supabase.from('graded_cards').select().eq('cert_number', cert).single();
+  if (cached && cached.card_name) {
+    return res.json({
       cert,
-      cardName: data.subject || data.cardName,
-      grade: data.grade,
-      year: data.year,
-      brand: data.brand,
-      variety: data.variety,
-      images: data.images || []
+      cardName: cached.card_name,
+      grade: cached.grade,
+      variety: cached.variety,
+      images: cached.image_url ? [cached.image_url] : [],
+      cached: true
     });
-
-  } catch (err) {
-    if (browser) await browser.close();
-    res.status(500).json({ error: err.message });
   }
+
+  const data = await scrapePSA(cert);
+  if (!data) return res.status(404).json({ error: '카드 정보를 찾을 수 없습니다' });
+
+  res.json({
+    cert,
+    cardName: data.subject,
+    grade: data.grade,
+    variety: data.variety,
+    images: data.images || []
+  });
 });
 
 app.get('/products', async (req, res) => {
