@@ -41,13 +41,16 @@ app.get('/psa', async (req, res) => {
         if (label === 'Brand/Title') brand = value;
         if (label === 'Subject') subject = value;
       });
-      return { cardName, grade, year, brand, subject };
+      const images = Array.from(document.querySelectorAll('main img'))
+        .map(img => img.src)
+        .filter(src => src.includes('cloudfront.net'));
+      return { cardName, grade, year, brand, subject, images };
     });
 
     await browser.close();
 
     if (!data.grade && !data.subject) {
-      return res.status(404).json({ error: '카드 정보를 찾을 수 없습니다', debug: data });
+      return res.status(404).json({ error: '카드 정보를 찾을 수 없습니다' });
     }
 
     res.json({
@@ -56,6 +59,7 @@ app.get('/psa', async (req, res) => {
       grade: data.grade,
       year: data.year,
       brand: data.brand,
+      images: data.images || []
     });
 
   } catch (err) {
@@ -64,4 +68,4 @@ app.get('/psa', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.env(`Server running on port ${PORT}`));
